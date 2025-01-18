@@ -13,15 +13,19 @@ class AESModeGCM implements AESModeStrategy {
 
   @override
   String encrypt(String plaintext, Uint8List key, Uint8List iv) {
+    _validateIV(iv);
+
     final plaintextBytes = Uint8List.fromList(utf8.encode(plaintext));
-    final expandedKey = AESKeyExpansion.expandKey(key);
+    final expandedKey = Uint8List.fromList(AESKeyExpansion.expandKey(key));
     final numRounds = _getNumRounds();
 
     // Step 1: Encrypt plaintext using CTR mode
-    final ciphertext = _ctrModeEncrypt(plaintextBytes, expandedKey, numRounds, iv);
+    final ciphertext =
+        _ctrModeEncrypt(plaintextBytes, expandedKey, numRounds, iv);
 
     // Step 2: Compute GHASH for authentication
-    final authTag = _computeAuthTag(ciphertext, Uint8List(0), expandedKey, numRounds, iv);
+    final authTag =
+        _computeAuthTag(ciphertext, Uint8List(0), expandedKey, numRounds, iv);
 
     // Combine ciphertext and authentication tag
     return base64.encode(Uint8List.fromList([...ciphertext, ...authTag]));
@@ -29,33 +33,47 @@ class AESModeGCM implements AESModeStrategy {
 
   @override
   String decrypt(String ciphertext, Uint8List key, Uint8List iv) {
+    _validateIV(iv);
+
     final ciphertextBytes = base64.decode(ciphertext);
     final authTag = ciphertextBytes.sublist(ciphertextBytes.length - 16);
-    final actualCiphertext = ciphertextBytes.sublist(0, ciphertextBytes.length - 16);
+    final actualCiphertext =
+        ciphertextBytes.sublist(0, ciphertextBytes.length - 16);
 
-    final expandedKey = AESKeyExpansion.expandKey(key);
+    final expandedKey = Uint8List.fromList(AESKeyExpansion.expandKey(key));
     final numRounds = _getNumRounds();
 
     // Verify authentication tag
-    final computedTag = _computeAuthTag(actualCiphertext, Uint8List(0), expandedKey, numRounds, iv);
+    final computedTag = _computeAuthTag(
+        actualCiphertext, Uint8List(0), expandedKey, numRounds, iv);
     if (!_constantTimeCompare(authTag, computedTag)) {
-      throw ArgumentError('Authentication failed: invalid tag.');
+      throw ArgumentError('Authentication failed: Invalid tag.');
     }
 
     // Decrypt using CTR mode
-    return utf8.decode(_ctrModeEncrypt(actualCiphertext, expandedKey, numRounds, iv));
+    return utf8
+        .decode(_ctrModeEncrypt(actualCiphertext, expandedKey, numRounds, iv));
   }
 
-  Uint8List _ctrModeEncrypt(Uint8List input, Uint8List expandedKey, int numRounds, Uint8List counter) {
+  Uint8List _ctrModeEncrypt(
+      Uint8List input, Uint8List expandedKey, int numRounds, Uint8List iv) {
+    // Transform 12-byte IV into a 16-byte counter block
+    final counter = Uint8List(16);
+    counter.setRange(0, 12, iv);
+    counter[15] = 1; // Set initial counter value to 1
+
     final output = Uint8List(input.length);
 
     for (var i = 0; i < input.length; i += 16) {
       // Encrypt counter block
-      var counterBlock = AESRoundOperations.addRoundKey(counter, expandedKey.sublist(0, 16));
+      var counterBlock =
+          AESRoundOperations.addRoundKey(counter, expandedKey.sublist(0, 16));
       for (var round = 1; round < numRounds; round++) {
-        counterBlock = AESRoundOperations.encryptRound(counterBlock, expandedKey, round);
+        counterBlock =
+            AESRoundOperations.encryptRound(counterBlock, expandedKey, round);
       }
-      counterBlock = AESRoundOperations.finalEncryptRound(counterBlock, expandedKey, numRounds);
+      counterBlock = AESRoundOperations.finalEncryptRound(
+          counterBlock, expandedKey, numRounds);
 
       // XOR with input block
       final chunkSize = (i + 16 > input.length) ? input.length - i : 16;
@@ -77,15 +95,23 @@ class AESModeGCM implements AESModeStrategy {
     }
   }
 
-  Uint8List _computeAuthTag(Uint8List ciphertext, Uint8List aad, Uint8List expandedKey, int numRounds, Uint8List counter) {
+  Uint8List _computeAuthTag(Uint8List ciphertext, Uint8List aad,
+      Uint8List expandedKey, int numRounds, Uint8List iv) {
+    // Transform 12-byte IV into a 16-byte counter block
+    final counter = Uint8List(16);
+    counter.setRange(0, 12, iv);
+    counter[15] = 1; // Set initial counter value to 1
+
     final hashSubKey = _generateHashSubKey(expandedKey, numRounds);
-    final ghashInput = Uint8List.fromList([...aad, ...ciphertext, ..._lengthBlock(aad, ciphertext)]);
+    final ghashInput = Uint8List.fromList(
+        [...aad, ...ciphertext, ..._lengthBlock(aad, ciphertext)]);
     return _ghash(hashSubKey, ghashInput);
   }
 
   Uint8List _generateHashSubKey(Uint8List expandedKey, int numRounds) {
     final zeroBlock = Uint8List(16);
-    var state = AESRoundOperations.addRoundKey(zeroBlock, expandedKey.sublist(0, 16));
+    var state =
+        AESRoundOperations.addRoundKey(zeroBlock, expandedKey.sublist(0, 16));
     for (var round = 1; round < numRounds; round++) {
       state = AESRoundOperations.encryptRound(state, expandedKey, round);
     }
@@ -93,14 +119,21 @@ class AESModeGCM implements AESModeStrategy {
   }
 
   Uint8List _ghash(Uint8List hashSubKey, Uint8List input) {
-    final y = Uint8List(16);
+    final y = Uint8List(16); // Initialize with zeros
     final blockCount = (input.length + 15) ~/ 16;
 
     for (var i = 0; i < blockCount; i++) {
-      final block = input.sublist(i * 16, (i + 1) * 16);
+      final start = i * 16;
+      final end = (start + 16 > input.length) ? input.length : start + 16;
+      final block = Uint8List(16)
+        ..setRange(0, end - start, input.sublist(start, end));
+
+      // XOR the current block with `y`
       for (var j = 0; j < 16; j++) {
         y[j] ^= block[j];
       }
+
+      // Perform multiplication in GF(2^128)
       _multiplyInGF128(y, hashSubKey);
     }
 
@@ -160,6 +193,12 @@ class AESModeGCM implements AESModeStrategy {
         return 14;
       default:
         throw ArgumentError('Invalid key size.');
+    }
+  }
+
+  void _validateIV(Uint8List iv) {
+    if (iv.length != 12) {
+      throw ArgumentError('IV size must be 12 bytes for AES-GCM.');
     }
   }
 }

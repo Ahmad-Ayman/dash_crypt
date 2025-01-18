@@ -34,7 +34,8 @@ class AESModeCBC implements AESModeStrategy {
         state = AESRoundOperations.encryptRound(state, expandedKey, round);
       }
 
-      state = AESRoundOperations.finalEncryptRound(state, expandedKey, numRounds);
+      state =
+          AESRoundOperations.finalEncryptRound(state, expandedKey, numRounds);
       ciphertext.setRange(i, i + 16, state);
       previousBlock = state;
     }
@@ -63,7 +64,8 @@ class AESModeCBC implements AESModeStrategy {
         state = AESRoundOperations.decryptRound(state, expandedKey, round);
       }
 
-      state = AESRoundOperations.finalDecryptRound(state, expandedKey, numRounds);
+      state =
+          AESRoundOperations.finalDecryptRound(state, expandedKey, numRounds);
 
       final xorBlock = _xorBlocks(state, previousBlock);
       decrypted.setRange(i, i + 16, xorBlock);
@@ -82,13 +84,14 @@ class AESModeCBC implements AESModeStrategy {
 
   Uint8List _applyPKCS7Padding(Uint8List data) {
     final paddingLength = 16 - (data.length % 16);
-    return Uint8List.fromList([...data, ...List.filled(paddingLength, paddingLength)]);
+    return Uint8List.fromList(
+        [...data, ...List.filled(paddingLength, paddingLength)]);
   }
 
   Uint8List _removePKCS7Padding(Uint8List data) {
     final paddingLength = data.last;
     if (paddingLength <= 0 || paddingLength > 16) {
-      throw ArgumentError('Invalid PKCS7 padding detected.');
+      throw ArgumentError('Invalid PKCS#7 padding detected.');
     }
     return data.sublist(0, data.length - paddingLength);
   }
