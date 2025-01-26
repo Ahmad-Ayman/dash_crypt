@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [0.0.1+2] - 2025-01-25
 ### Changed
 - Update support for Generating IV for the supported AES modes.
-- 
+
 ## [0.0.1+1] - 2025-01-25
 ### Changed
 - Updated `CHANGELOG.md` for improved clarity.
