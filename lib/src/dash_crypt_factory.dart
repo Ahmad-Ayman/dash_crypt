@@ -6,14 +6,14 @@ import 'algorithms/classical/classical_index.dart';
 
 class DashCrypt {
   // AES Algorithms
-  static AES_CBC AES__CBC({required KeySize keySize}) => AES_CBC(keySize: keySize);
+  static AesCbc AES__CBC({required KeySize keySize}) => AesCbc(keySize: keySize);
 
 
-  static AES_ECB AES__ECB({required KeySize keySize}) => AES_ECB(keySize: keySize);
+  static AesEcb AES__ECB({required KeySize keySize}) => AesEcb(keySize: keySize);
 
-  static AES_GCM AES__GCM({required KeySize keySize}) => AES_GCM(keySize: keySize);
+  static Aesgcm AES__GCM({required KeySize keySize}) => Aesgcm(keySize: keySize);
 
-  static AES_CFB AES__CFB({required KeySize keySize}) => AES_CFB(keySize: keySize);
+  static AesCfb AES__CFB({required KeySize keySize}) => AesCfb(keySize: keySize);
 
   // Classic Algorithms
   static final Caesar = CaesarCipher();

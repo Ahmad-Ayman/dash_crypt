@@ -4,10 +4,10 @@ import 'package:encrypt/encrypt.dart' as enc;
 import '../../exceptions/encryption_exceptions.dart';
 import '../../utils/enums.dart';
 
-class AES_CFB {
+class AesCfb {
   final KeySize _keySize;
 
-  AES_CFB({
+  AesCfb({
     required KeySize keySize,
   }) : _keySize = keySize;
 

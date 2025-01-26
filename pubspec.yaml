@@ -1,18 +1,26 @@
 name: dash_crypt
-description: "A new Flutter project."
+description: >
+  DashCrypt is a powerful and flexible encryption and decryption package for Flutter and Dart. 
+  It supports a wide range of modern and classical cryptographic algorithms, making it ideal 
+  for developers looking to integrate secure encryption into their projects. DashCrypt also 
+  provides utilities for secure key and IV generation, ensuring robust security. Designed 
+  for simplicity, performance, and scalability, DashCrypt is the perfect solution for all 
+  your encryption needs.
 version: 0.0.1
-homepage:
+homepage: https://ahmed-ayman.framer.ai/
+repository: https://github.com/Ahmad-Ayman/dash_crypt
 
 environment:
-  sdk: ^3.6.0
-  flutter: ">=1.17.0"
+  sdk: ">=3.0.0 <4.0.0" # Minimum Dart SDK version required by your plugin
+  flutter: ">=3.0.0"    # Minimum Flutter SDK version required by your plugin
 
 dependencies:
   flutter:
     sdk: flutter
-  pointycastle:
-  encrypt:
-  cryptography:
+  pointycastle: any
+  encrypt: any
+  cryptography: any
+  convert: any
 
 dev_dependencies:
   flutter_test:

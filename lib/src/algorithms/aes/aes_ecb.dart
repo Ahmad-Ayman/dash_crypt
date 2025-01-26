@@ -4,10 +4,10 @@ import 'package:pointycastle/export.dart' as pc;
 import '../../exceptions/encryption_exceptions.dart';
 import '../../utils/enums.dart';
 
-class AES_ECB {
+class AesEcb {
   final KeySize _keySize;
 
-  AES_ECB({
+  AesEcb({
     required KeySize keySize,
   }) : _keySize = keySize;
 

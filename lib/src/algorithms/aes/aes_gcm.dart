@@ -4,10 +4,10 @@ import 'package:cryptography/cryptography.dart';
 
 import '../../utils/enums.dart';
 
-class AES_GCM {
+class Aesgcm {
   final KeySize _keySize;
 
-  AES_GCM({
+  Aesgcm({
     required KeySize keySize,
   }) : _keySize = keySize;
 

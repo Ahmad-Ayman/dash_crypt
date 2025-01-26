@@ -5,10 +5,10 @@ import '../../exceptions/encryption_exceptions.dart';
 import '../../utils/conversion_utils.dart';
 import '../../utils/enums.dart';
 
-class AES_CBC {
+class AesCbc {
   final KeySize _keySize;
 
-  AES_CBC({
+  AesCbc({
     required KeySize keySize,
   }) : _keySize = keySize {
     if (!KeySize.values.contains(keySize)) {
