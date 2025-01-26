@@ -59,13 +59,13 @@ class PlayfairCipher {
     throw ArgumentError("Letter not found in key square");
   }
 
-  String encrypt({required String plainText, required String key}) {
+  String encrypt({required String text, required String key}) {
     _initializeKeySquare(key);
-    plainText = _prepareText(plainText);
+    text = _prepareText(text);
     final buffer = StringBuffer();
 
-    for (int i = 0; i < plainText.length; i += 2) {
-      final digraph = plainText.substring(i, i + 2);
+    for (int i = 0; i < text.length; i += 2) {
+      final digraph = text.substring(i, i + 2);
       final pos1 = _findPosition(digraph[0]);
       final pos2 = _findPosition(digraph[1]);
 
@@ -87,12 +87,12 @@ class PlayfairCipher {
     return buffer.toString();
   }
 
-  String decrypt({required String cipherText, required String key}) {
+  String decrypt({required String text, required String key}) {
     _initializeKeySquare(key);
     final buffer = StringBuffer();
 
-    for (int i = 0; i < cipherText.length; i += 2) {
-      final digraph = cipherText.substring(i, i + 2);
+    for (int i = 0; i < text.length; i += 2) {
+      final digraph = text.substring(i, i + 2);
       final pos1 = _findPosition(digraph[0]);
       final pos2 = _findPosition(digraph[1]);
 

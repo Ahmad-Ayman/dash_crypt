@@ -5,9 +5,9 @@ import 'package:dash_crypt/src/utils/extensions.dart';
 /// is shifted based on a repeating key.
 class VigenereCipher {
   /// Encrypts the plaintext using the Vigenère cipher with the given key.
-  String encrypt({required String plainText, required String key}) {
+  String encrypt({required String text, required String key}) {
     key = key.toLowerCase();
-    return String.fromCharCodes(plainText.codeUnits.mapIndexed((index, char) {
+    return String.fromCharCodes(text.codeUnits.mapIndexed((index, char) {
       if (char >= 65 && char <= 90) {
         // Uppercase letters
         return 65 +
@@ -23,9 +23,9 @@ class VigenereCipher {
   }
 
   /// Decrypts the ciphertext using the Vigenère cipher with the given key.
-  String decrypt({required String cipherText, required String key}) {
+  String decrypt({required String text, required String key}) {
     key = key.toLowerCase();
-    return String.fromCharCodes(cipherText.codeUnits.mapIndexed((index, char) {
+    return String.fromCharCodes(text.codeUnits.mapIndexed((index, char) {
       if (char >= 65 && char <= 90) {
         // Uppercase letters
         return 65 +

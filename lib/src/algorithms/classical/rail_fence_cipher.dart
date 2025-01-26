@@ -1,9 +1,9 @@
 class RailFenceCipher {
-  String encrypt({required String plainText, required int numberOfRails}) {
+  String encrypt({required String text, required int numberOfRails}) {
     final rails = List.generate(numberOfRails, (_) => StringBuffer());
     int direction = 1, railIndex = 0;
 
-    for (final char in plainText.runes) {
+    for (final char in text.runes) {
       rails[railIndex].write(String.fromCharCode(char));
       railIndex += direction;
       if (railIndex == 0 || railIndex == numberOfRails - 1) direction *= -1;
@@ -12,11 +12,11 @@ class RailFenceCipher {
     return rails.join();
   }
 
-  String decrypt({required String cipherText, required int numberOfRails}) {
-    final pattern = List.generate(cipherText.length, (_) => 0);
+  String decrypt({required String text, required int numberOfRails}) {
+    final pattern = List.generate(text.length, (_) => 0);
     int direction = 1, railIndex = 0;
 
-    for (int i = 0; i < cipherText.length; i++) {
+    for (int i = 0; i < text.length; i++) {
       pattern[i] = railIndex;
       railIndex += direction;
       if (railIndex == 0 || railIndex == numberOfRails - 1) direction *= -1;
@@ -32,7 +32,7 @@ class RailFenceCipher {
     int charIndex = 0;
     for (int i = 0; i < numberOfRails; i++) {
       rails[i] =
-          cipherText.substring(charIndex, charIndex + railLengths[i]).split('');
+          text.substring(charIndex, charIndex + railLengths[i]).split('');
       charIndex += railLengths[i];
     }
 

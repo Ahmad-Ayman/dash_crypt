@@ -1,7 +1,7 @@
 /// Implements the Monoalphabetic Substitution Cipher encryption and decryption.
 class MonoalphabeticCipher {
   /// Encrypts the plaintext using a custom key mapping.
-  String encrypt({required String plainText, required String key}) {
+  String encrypt({required String text, required String key}) {
     assert(key.length == 26,
         'Key must be 26 characters long, representing a mapping for the entire alphabet.');
 
@@ -23,7 +23,7 @@ class MonoalphabeticCipher {
       ..addAll(lowerKeyMap);
 
     // Encrypt the text
-    final encrypted = plainText.split('').map((char) {
+    final encrypted = text.split('').map((char) {
       return keyMap[char] ?? char; // Keep non-alphabetic characters unchanged
     }).join();
 
@@ -32,7 +32,7 @@ class MonoalphabeticCipher {
   }
 
   /// Decrypts the ciphertext using a custom key mapping.
-  String decrypt({required String cipherText, required String key}) {
+  String decrypt({required String text, required String key}) {
     assert(key.length == 26,
         'Key must be 26 characters long, representing a mapping for the entire alphabet.');
 
@@ -54,7 +54,7 @@ class MonoalphabeticCipher {
       ..addAll(lowerInverseKeyMap);
 
     // Decrypt the text
-    final decrypted = cipherText.split('').map((char) {
+    final decrypted = text.split('').map((char) {
       return inverseKeyMap[char] ??
           char; // Keep non-alphabetic characters unchanged
     }).join();

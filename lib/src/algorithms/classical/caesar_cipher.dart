@@ -3,8 +3,8 @@
 /// is shifted by a fixed number of positions in the alphabet.
 class CaesarCipher {
   /// Encrypts the plaintext using the Caesar cipher with the given shift.
-  String encrypt({required String plainText, required int shift}) {
-    return String.fromCharCodes(plainText.codeUnits.map((char) {
+  String encrypt({required String text, required int shift}) {
+    return String.fromCharCodes(text.codeUnits.map((char) {
       if (char >= 65 && char <= 90) {
         // Uppercase letters
         return 65 + ((char - 65 + shift) % 26);
@@ -18,7 +18,7 @@ class CaesarCipher {
   }
 
   /// Decrypts the ciphertext using the Caesar cipher with the given shift.
-  String decrypt({required String cipherText, required int shift}) {
-    return encrypt(plainText: cipherText, shift: 26 - (shift % 26));
+  String decrypt({required String text, required int shift}) {
+    return encrypt(text: text, shift: 26 - (shift % 26));
   }
 }

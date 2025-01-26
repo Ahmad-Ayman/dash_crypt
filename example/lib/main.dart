@@ -1,318 +1,333 @@
 import 'package:dash_crypt/dash_crypt.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void runEncryptionTestForAES({
+  required AesMode algorithmName,
+  required KeySize keySize,
+  required String text,
+  required String key,
+  String? iv, // Optional for algorithms like ECB
+}) async {
   try {
-    // Example plaintext
-    Map jso = {
-      "success": true,
-      'error': ['test'],
-      'data': {
-        "name": "Ahmed",
-        "age": 12,
-        "courses": [
-          {
-            "map": {"ww": 12, "dada": false}
-          }
-        ]
+
+
+    final encryptor = _getEncryptorForAES(algorithmName, keySize);
+    var ciphertext,decryptedText;
+    if(algorithmName == AesMode.ecb){
+
+      // Encrypt
+       ciphertext =  encryptor.encrypt(
+        text: text,
+        key: key,
+      );
+    }else if (algorithmName == AesMode.gcm){
+      ciphertext =  await encryptor.encrypt(
+        text: text,
+        key: key,
+        iv: iv ?? ''
+      );
+    }
+    else {
+      // Encrypt
+       ciphertext = encryptor.encrypt(
+        text: text,
+        key: key,
+        iv: iv ?? '', // Use empty IV if not required
+      );
+    }
+
+
+    if(algorithmName == AesMode.ecb){
+
+      // Encrypt
+       decryptedText =  encryptor.decrypt(
+        text: ciphertext,
+        key: key,
+      );
+
+    }else if (algorithmName == AesMode.gcm){
+      // Decrypt
+      decryptedText = await encryptor.decrypt(
+        text: ciphertext,
+        key: key,
+        iv: iv ?? '', // Use empty IV if not required
+      );
+    } else {
+      // Decrypt
+       decryptedText = encryptor.decrypt(
+        text: ciphertext,
+        key: key,
+        iv: iv ?? '', // Use empty IV if not required
+      );
       }
-    };
-    // var plainText = jsonEncode(jso);
-    var plainText = 'Hello, Welcome Ahmed to Dash Crypt';
+    print('--- Testing $algorithmName with KeySize: ${keySize.name} ---');
+    print('Ciphertext (Base64): $ciphertext');
+    print('Decrypted Text: $decryptedText');
 
-    // Test AES-128 with CBC mode
-    // final key128 = DashCrypt.generateKey(128);
-    final key128 = '''TurnDigital#1234''';
-    // final iv128 = DashCrypt.generateIV(16);
-    final iv128 = '123456789ABCDEFG';
 
-    print('AES-128 - CBC');
-    print('Plain text : $plainText');
-    final encrypted128CBC = DashCrypt.AES128.encrypt(
-      plainText: plainText,
-      key: key128,
-      iv: iv128,
-      mode: AESMode.CBC,
-    );
-    print('Key: $key128');
-    print("Encrypted: $encrypted128CBC");
+    isPassed(decryptedText,text);
 
-    final decrypted128CBC = DashCrypt.AES128.decrypt(
-      cipherText: encrypted128CBC,
-      key: key128,
-      iv: iv128,
-      mode: AESMode.CBC,
-    );
-    print("Decrypted: $decrypted128CBC");
-    print('#############################');
-    final key192 = DashCrypt.generateKey(192);
-    final iv192 = DashCrypt.generateIV(16);
-
-    print('AES-192 - CBC');
-    print('Plain text : $plainText');
-    print('Key: $key192');
-    final encrypted192CBC = DashCrypt.AES192.encrypt(
-      plainText: plainText,
-      key: key192,
-      iv: iv192,
-      mode: AESMode.CBC,
-    );
-    print("Encrypted: $encrypted192CBC");
-
-    final decrypted192CBC = DashCrypt.AES192.decrypt(
-      cipherText: encrypted192CBC,
-      key: key192,
-      iv: iv192,
-      mode: AESMode.CBC,
-    );
-    print("Decrypted: $decrypted192CBC");
-    print('#############################');
-    final key256 = DashCrypt.generateKey(256);
-    final iv256 = DashCrypt.generateIV(16);
-    print('AES-256 - CBC');
-    print('Plain text : $plainText');
-    print('Key: $key256');
-    final encrypted256CBC = DashCrypt.AES256.encrypt(
-      plainText: plainText,
-      key: key256,
-      iv: iv256,
-      mode: AESMode.CBC,
-    );
-    print("Encrypted: $encrypted256CBC");
-
-    final decrypted256CBC = DashCrypt.AES256.decrypt(
-      cipherText: encrypted256CBC,
-      key: key256,
-      iv: iv256,
-      mode: AESMode.CBC,
-    );
-    print("Decrypted: $decrypted256CBC");
-
-    print('#############################');
-    print('#############################');
-    print('AES-128 - GCM');
-
-    final key128_1 = DashCrypt.generateKey(128);
-    final ivGCM = DashCrypt.generateIV(12);
-    print('Key: $key128_1');
-    print('ivGCM: $ivGCM');
-    final encrypted128GCM = DashCrypt.AES128.encrypt(
-      plainText: plainText,
-      key: key128_1,
-      iv: ivGCM,
-      mode: AESMode.GCM,
-    );
-    print("Encrypted: $encrypted128GCM");
-
-    final decrypted128GCM = DashCrypt.AES128.decrypt(
-      cipherText: encrypted128GCM,
-      key: key128_1,
-      iv: ivGCM,
-      mode: AESMode.GCM,
-    );
-    print("Decrypted: $decrypted128GCM");
-    print('#############################');
-    print('AES-192 - GCM');
-    final key1921 = DashCrypt.generateKey(192);
-    print('Key: $key1921');
-    final encrypted192GCM = DashCrypt.AES192.encrypt(
-      plainText: plainText,
-      key: key1921,
-      iv: ivGCM,
-      mode: AESMode.GCM,
-    );
-    print("Encrypted: $encrypted192GCM");
-
-    final decrypted192GCM = DashCrypt.AES192.decrypt(
-      cipherText: encrypted192GCM,
-      key: key1921,
-      iv: ivGCM,
-      mode: AESMode.GCM,
-    );
-    print("Decrypted: $decrypted192GCM");
-    print('#############################');
-    print('AES-256 - GCM');
-    final key2561 = "TurnDigital#1234TurnDigital#1234";
-    print('Key: $key2561');
-    final encrypted256GCM = DashCrypt.AES256.encrypt(
-      plainText: plainText,
-      key: key2561,
-      iv: ivGCM,
-      mode: AESMode.GCM,
-    );
-    print("Encrypted: $encrypted256GCM");
-
-    final decrypted256GCM = DashCrypt.AES256.decrypt(
-      cipherText: encrypted256GCM,
-      key: key2561,
-      iv: ivGCM,
-      mode: AESMode.GCM,
-    );
-    print("Decrypted: $decrypted256GCM");
-    print('#############################');
-    print('#############################');
-    print('AES-128 - ECB');
-    final key128_2 = DashCrypt.generateKey(128);
-    print('Key: $key128_2');
-    final encrypted128ECB = DashCrypt.AES128.encrypt(
-      plainText: plainText,
-      key: key128_2,
-      mode: AESMode.ECB,
-    );
-    print("Encrypted: $encrypted128ECB");
-
-    final decrypted128ECB = DashCrypt.AES128.decrypt(
-      cipherText: encrypted128ECB,
-      key: key128_2,
-      mode: AESMode.ECB,
-    );
-    print("Decrypted: $decrypted128ECB");
-    print('#############################');
-    print('AES-192 - ECB');
-    final key1922 = DashCrypt.generateKey(192);
-    print('Key: $key1922');
-    final encrypted192ECB = DashCrypt.AES192.encrypt(
-      plainText: plainText,
-      key: key1922,
-      mode: AESMode.ECB,
-    );
-    print("Encrypted: $encrypted192ECB");
-
-    final decrypted192ECB = DashCrypt.AES192.decrypt(
-      cipherText: encrypted192ECB,
-      key: key1922,
-      mode: AESMode.ECB,
-    );
-    print("Decrypted: $decrypted192ECB");
-    print('#############################');
-    print('AES-256 - ECB');
-    final key2563 = "TurnDigital#1234TurnDigital#1234";
-    print('key : $key2563');
-    final encrypted256ECB = DashCrypt.AES256.encrypt(
-      plainText: plainText,
-      key: key2563,
-      mode: AESMode.ECB,
-    );
-    print("Encrypted: $encrypted256ECB");
-
-    final decrypted256ECB = DashCrypt.AES256.decrypt(
-      cipherText: encrypted256ECB,
-      key: key2563,
-      mode: AESMode.ECB,
-    );
-    print("Decrypted: $decrypted256ECB");
-
-    print('#############################');
-    print('#############################');
-    print('Caesar Cipher');
-    final encryptedCaesar = DashCrypt.Caesar.encrypt(
-      plainText: plainText,
-      shift: 3,
-    );
-    print("Caesar Encrypted: $encryptedCaesar");
-
-    final decryptedCaesar = DashCrypt.Caesar.decrypt(
-      cipherText: encryptedCaesar,
-      shift: 3,
-    );
-    print("Caesar Decrypted: $decryptedCaesar");
-    print('#############################');
-    print('#############################');
-    print('Vigenere Cipher');
-    final encryptedVigenere = DashCrypt.Vigenere.encrypt(
-      plainText: plainText,
-      key: "KEY",
-    );
-    print("Vigenere Encrypted: $encryptedVigenere");
-
-    final decryptedVigenere = DashCrypt.Vigenere.decrypt(
-      cipherText: encryptedVigenere,
-      key: "KEY",
-    );
-    print("Vigenere Decrypted: $decryptedVigenere");
-
-    print('#############################');
-    print('#############################');
-    print('Playfair Cipher');
-    final encryptedPlayfair = DashCrypt.Playfair.encrypt(
-      plainText: plainText,
-      key: "HELLO",
-    );
-    print("Playfair Encrypted: $encryptedPlayfair");
-
-    final decryptedPlayfair = DashCrypt.Playfair.decrypt(
-      cipherText: encryptedPlayfair,
-      key: "HELLO",
-    );
-    print("Playfair Decrypted: $decryptedPlayfair");
-
-    print('#############################');
-    print('#############################');
-    print('Rail Fence Cipher');
-
-    final encryptedRailFence = DashCrypt.RailFence.encrypt(
-      plainText: plainText,
-      numberOfRails: 3,
-    );
-    print("Rail Fence Encrypted: $encryptedRailFence");
-
-    final decryptedRailFence = DashCrypt.RailFence.decrypt(
-      cipherText: encryptedRailFence,
-      numberOfRails: 3,
-    );
-    print("Rail Fence Decrypted: $decryptedRailFence");
-
-    print('#############################');
-    print('#############################');
-    print('Affine Cipher');
-    final encryptedAffine = DashCrypt.Affine.encrypt(
-      plainText: plainText,
-      a: 5,
-      b: 8,
-    );
-    print("Affine Encrypted: $encryptedAffine");
-
-    final decryptedAffine = DashCrypt.Affine.decrypt(
-      cipherText: encryptedAffine,
-      a: 5,
-      b: 8,
-    );
-    print("Affine Decrypted: $decryptedAffine");
-
-    print('#############################');
-    print('#############################');
-    print('Monoalphabetic Cipher');
-    const keyMono = "QWERTYUIOPASDFGHJKLZXCVBNM";
-    final encryptedMono = DashCrypt.Monoalphabetic.encrypt(
-      plainText: plainText,
-      key: keyMono,
-    );
-    print("keyMono Encrypted: $encryptedMono");
-
-    final decryptedMono = DashCrypt.Monoalphabetic.decrypt(
-      cipherText: encryptedMono,
-      key: keyMono,
-    );
-    print("keyMono Decrypted: $decryptedMono");
-    print('#############################');
-    print('#############################');
-    print('Columnar Transposition Cipher');
-    const keyTrans = 3;
-    final encryptedColumnar = DashCrypt.ColumnarTransposition.encrypt(
-      plainText: plainText,
-      key: keyTrans,
-    );
-    print("Columnar Transposition Encrypted: $encryptedColumnar");
-
-    final decryptedColumnar = DashCrypt.ColumnarTransposition.decrypt(
-      cipherText: encryptedColumnar,
-      key: keyTrans,
-    );
-    print("Columnar Transposition Decrypted: $decryptedColumnar");
-  } catch (e, stackTrace) {
-    print("Error: $e\n$stackTrace");
+  } catch (e) {
+    print('❌ Error during test: $e\n');
   }
+}
+
+dynamic _getEncryptorForAES(AesMode algorithmName, KeySize keySize) {
+  switch (algorithmName) {
+    case AesMode.cbc:
+      return DashCrypt.AES__CBC(keySize: keySize);
+    case AesMode.cfb:
+      return DashCrypt.AES__CFB(keySize: keySize);
+    case AesMode.ecb:
+      return DashCrypt.AES__ECB(keySize: keySize);
+    case AesMode.gcm:
+      return DashCrypt.AES__GCM(keySize: keySize);
+  // Add new algorithms here as you implement them
+    default:
+      throw ArgumentError('Unknown algorithm: $algorithmName');
+  }
+}
+void isPassed(decryptedText,text){
+  if (decryptedText == text) {
+    print('✅ Test Passed!\n');
+  } else {
+    print('❌ Test Failed: Decrypted text does not match the original.\n');
+  }
+}
+
+
+/// Add utils to generate key and iv
+void main() {
+  // CBC Tests
+  runEncryptionTestForAES(
+    algorithmName: AesMode.cbc,
+    keySize: KeySize.aes128,
+    text: 'Hello, AES-CBC!',
+    key: '0123456789abcdef',
+    iv: 'fedcba9876543210',
+  );
+
+  runEncryptionTestForAES(
+    algorithmName: AesMode.cbc,
+    keySize: KeySize.aes256,
+    text: 'This is a longer text for testing AES CBC encryption and decryption.',
+    key: '0123456789abcdef0123456789abcdef',
+    iv: 'abcdef0123456789',
+  );
+
+  runEncryptionTestForAES(
+    algorithmName: AesMode.cbc,
+    keySize: KeySize.aes192,
+    text: '1234567890abcdef',
+    key: '0123456789abcdef01234567',
+    iv: 'abcdefabcdef1234',
+  );
+
+  runEncryptionTestForAES(
+    algorithmName: AesMode.cbc,
+    keySize: KeySize.aes128,
+    text: '12345',
+    key: '0123456789abcdef',
+    iv: 'fedcba9876543210',
+  );
+
+  // CFB Tests
+  runEncryptionTestForAES(
+    algorithmName: AesMode.cfb,
+    keySize: KeySize.aes128,
+    text: 'Hello, CFB!',
+    key: '0123456789abcdef',
+    iv: 'fedcba9876543210',
+  );
+
+  runEncryptionTestForAES(
+    algorithmName: AesMode.cfb,
+    keySize: KeySize.aes192,
+    text: 'AES CFB 192-bit test.',
+    key: '0123456789abcdef01234567',
+    iv: 'abcdefabcdef1234',
+  );
+
+  runEncryptionTestForAES(
+    algorithmName: AesMode.cfb,
+    keySize: KeySize.aes256,
+    text: 'This is a longer text for AES CFB mode testing.',
+    key: '0123456789abcdef0123456789abcdef',
+    iv: 'abcdef0123456789',
+  );
+
+  // ECB Tests
+  runEncryptionTestForAES(
+    algorithmName: AesMode.ecb,
+    keySize: KeySize.aes128,
+    text: 'Eighteen chars.!!',
+    key: '0123456789abcdef',
+  );
+
+  runEncryptionTestForAES(
+    algorithmName: AesMode.ecb,
+    keySize: KeySize.aes192,
+    text: 'Eighteen chars.!!',
+    key: '0123456789abcdef01234567',
+  );
+
+  runEncryptionTestForAES(
+    algorithmName: AesMode.ecb,
+    keySize: KeySize.aes256,
+    text: 'Eighteen chars.!!',
+    key: '0123456789abcdef0123456789abcdef',
+  );
+
+
+  // Test AES-GCM 128-bit key
+  runEncryptionTestForAES(
+    algorithmName: AesMode.gcm,
+    keySize: KeySize.aes128,
+    text: 'Hello, AES-GCM!',
+    key: '0123456789abcdef',
+    iv: 'fedcba987654', // 12-byte IV required for GCM
+  );
+
+  // Test AES-GCM 192-bit key
+  runEncryptionTestForAES(
+    algorithmName: AesMode.gcm,
+    keySize: KeySize.aes192,
+    text: 'This is a GCM 192-bit test.',
+    key: '0123456789abcdef01234567',
+    iv: 'abcdef012345', // 12-byte IV
+  );
+
+  // Test AES-GCM 256-bit key
+  runEncryptionTestForAES(
+    algorithmName: AesMode.gcm,
+    keySize: KeySize.aes256,
+    text: 'This is a longer text for AES GCM mode testing.',
+    key: '0123456789abcdef0123456789abcdef',
+    iv: 'abcdefabcdef', // 12-byte IV
+  );
+
+
+  testAffine();
+  testCaeser();
+  testColumnar();
+  testMonoalphabetic();
+  testPlayfair();
+  testRailFence();
+  testVigenere();
+
+  print('ecb generated IV : ${DashCrypt.generateIV(AesMode.ecb)}');
+  print('cbc generated IV : ${DashCrypt.generateIV(AesMode.cbc)}');
+  print('gcm generated IV : ${DashCrypt.generateIV(AesMode.gcm)}');
+  print('cfb generated IV : ${DashCrypt.generateIV(AesMode.cfb)}');
+  print('aes128 generated Key : ${DashCrypt.generateKey(KeySize.aes128)}');
+  print('aes192 generated Key : ${DashCrypt.generateKey(KeySize.aes192)}');
+  print('aes256 generated Key : ${DashCrypt.generateKey(KeySize.aes256)}');
+
   runApp(const MyApp());
+}
+
+
+void testCaeser(){
+  try{
+    var p1= "HELLOCAESAR";
+    var shift = 3;
+    var caesar = DashCrypt.Caesar.encrypt(text: p1, shift:shift );
+    var caesarDec = DashCrypt.Caesar.decrypt(text: caesar, shift:shift );
+    print('--- Testing Caesar with Shift: ${shift}  ---');
+    print('Ciphertext (Base64): $caesar');
+    print('Decrypted Text: $caesarDec');
+    isPassed(caesarDec,p1);
+  } catch (e) {
+    print('❌ Error during test: $e\n');
+  }
+}
+void testColumnar(){
+  try{
+    var p1= "HELLOCOLUMNAR";
+    var key = 3;
+    var columnar = DashCrypt.ColumnarTransposition.encrypt(text: p1, numberOfColumns:key );
+    var columnarDec = DashCrypt.ColumnarTransposition.decrypt(text: columnar, numberOfColumns:key );
+    print('--- Testing Columnar with Key: ${key}  ---');
+    print('Ciphertext (Base64): $columnar');
+    print('Decrypted Text: $columnarDec');
+    isPassed(columnarDec,p1);
+  } catch (e) {
+    print('❌ Error during test: $e\n');
+  }
+}
+void testMonoalphabetic(){
+  try{
+    var p1= "HELLOMONO";
+    var key = "QWERTYUIOPLKJHGFDSAZXCVBNM";
+    var monoalphabetic = DashCrypt.Monoalphabetic.encrypt(text: p1, key:key );
+    var monoalphabeticDec = DashCrypt.Monoalphabetic.decrypt(text: monoalphabetic, key:key );
+    print('--- Testing Monoalphabetic with Key: ${key}  ---');
+    print('Ciphertext (Base64): $monoalphabetic');
+    print('Decrypted Text: $monoalphabeticDec');
+    isPassed(monoalphabeticDec,p1);
+  } catch (e) {
+    print('❌ Error during test: $e\n');
+  }
+}
+void testPlayfair(){
+  try{
+    var p1= "HELLOPLAYFAIR";
+    var key = "KEYWORD";
+    var playfair = DashCrypt.Playfair.encrypt(text: p1, key:key );
+    var playfairDec = DashCrypt.Playfair.decrypt(text: playfair, key:key );
+    print('--- Testing PlayFair with Key: ${key}  ---');
+    print('Ciphertext (Base64): $playfair');
+    print('Decrypted Text: $playfairDec');
+    isPassed(playfairDec,p1);
+  } catch (e) {
+    print('❌ Error during test: $e\n');
+  }
+}
+
+void testRailFence(){
+  try{
+    var p1= "HELLORAILFENCE";
+    var key = 3;
+    var railFence = DashCrypt.RailFence.encrypt(text: p1, numberOfRails:key );
+    var railFenceDec = DashCrypt.RailFence.decrypt(text: railFence, numberOfRails:key );
+    print('--- Testing RailFence with Key: ${key}  ---');
+    print('Ciphertext (Base64): $railFence');
+    print('Decrypted Text: $railFenceDec');
+    isPassed(railFenceDec,p1);
+  } catch (e) {
+    print('❌ Error during test: $e\n');
+  }
+}
+
+void testVigenere(){
+  try{
+    var p1= "HELLOVIGENERE";
+    var key = 'KEY';
+    var vigenere = DashCrypt.Vigenere.encrypt(text: p1, key:key );
+    var vigenereDec = DashCrypt.Vigenere.decrypt(text: vigenere, key:key );
+    print('--- Testing Vigenere with Key: ${key}  ---');
+    print('Ciphertext (Base64): $vigenere');
+    print('Decrypted Text: $vigenereDec');
+    isPassed(vigenereDec,p1);
+  } catch (e) {
+    print('❌ Error during test: $e\n');
+  }
+}
+
+void testAffine(){
+  try{
+    var p1= "HELLOVIGENERE";
+    var a = 5;
+    var b = 8;
+    var affine = DashCrypt.Affine.encrypt(text: p1, a:a , b:b );
+    var affineDec = DashCrypt.Affine.decrypt(text: affine, a:a , b:b  );
+    print('--- Testing Affine with A: ${a} and B: ${b} ---');
+    print('Ciphertext (Base64): $affine');
+    print('Decrypted Text: $affineDec');
+    isPassed(affineDec,p1);
+  } catch (e) {
+    print('❌ Error during test: $e\n');
+  }
 }
 
 class MyApp extends StatelessWidget {

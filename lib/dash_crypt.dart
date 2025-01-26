@@ -1,2 +1,2 @@
-export 'src/dash_crypt_imp.dart';
+export 'src/dash_crypt_factory.dart';
 export 'src/utils/enums.dart';

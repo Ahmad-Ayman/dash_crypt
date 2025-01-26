@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  pointycastle:
+  encrypt:
+  cryptography:
 
 dev_dependencies:
   flutter_test:

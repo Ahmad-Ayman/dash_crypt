@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:convert/convert.dart';
+import 'package:dash_crypt/dash_crypt.dart';
 
 class SecureRandomUtils {
   /// Generates cryptographically secure random bytes of the specified length.
@@ -39,4 +41,36 @@ class SecureRandomUtils {
     }
     return generateSecureBytes(ivSize);
   }
+
+  /// Helper to convert bytes to a hex string.
+  static String bytesToHex(Uint8List bytes) {
+    return hex.encode(bytes);
+  }
+
+
+
+
+
+  /// Helper to generate random bytes.
+  static Uint8List generateSecureBytesForKey(KeySize size) {
+
+    final random = Random.secure();
+    int length=0;
+    switch(size){
+      case KeySize.aes128:
+        length = 16;
+        break;
+      case KeySize.aes192:
+        length = 24;
+        break;
+      case KeySize.aes256:
+        length = 32;
+        break;
+    }
+    return Uint8List.fromList(
+      List<int>.generate(length, (_) => random.nextInt(256)),
+    );
+  }
+
+
 }

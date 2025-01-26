@@ -2,10 +2,10 @@ import 'package:dash_crypt/src/utils/sanitized.dart';
 
 class AffineCipher {
   /// Encrypts the given plaintext using the Affine Cipher formula.
-  String encrypt({required String plainText, required int a, required int b}) {
+  String encrypt({required String text, required int a, required int b}) {
     _validateAffineKey(a);
     final m = 26; // Size of the alphabet
-    final sanitized = _sanitizeAndTrackSpecials(plainText);
+    final sanitized = _sanitizeAndTrackSpecials(text);
 
     final encryptedText = String.fromCharCodes(
       sanitized.text.codeUnits.map((char) {
@@ -17,18 +17,18 @@ class AffineCipher {
     );
 
     return _restoreSpecialCharacters(
-      originalText: plainText,
+      originalText: text,
       processedText: encryptedText,
       specialPositions: sanitized.positions,
     );
   }
 
   /// Decrypts the given ciphertext using the Affine Cipher formula.
-  String decrypt({required String cipherText, required int a, required int b}) {
+  String decrypt({required String text, required int a, required int b}) {
     _validateAffineKey(a);
     final m = 26; // Size of the alphabet
     final aInv = _modularInverse(a, m); // Modular multiplicative inverse of `a`
-    final sanitized = _sanitizeAndTrackSpecials(cipherText);
+    final sanitized = _sanitizeAndTrackSpecials(text);
 
     final decryptedText = String.fromCharCodes(
       sanitized.text.codeUnits.map((char) {
@@ -41,7 +41,7 @@ class AffineCipher {
     );
 
     return _restoreSpecialCharacters(
-      originalText: cipherText,
+      originalText: text,
       processedText: decryptedText,
       specialPositions: sanitized.positions,
     );
