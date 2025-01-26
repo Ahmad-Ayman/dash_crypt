@@ -25,14 +25,13 @@ class DashCrypt {
   static final Affine = AffineCipher();
 
   /// Generates a secure random IV based on the AES algorithm name.
-  /// [algorithmName] must be one of the AES algorithms: CBC, CFB, GCM, or OFB.
+  /// [algorithmName] must be one of the AES algorithms: CBC, CFB, GCM, .
   static String generateIV(AesMode mode) {
     int ivSize;
 
     switch (mode) {
       case AesMode.cbc:
       case AesMode.cfb:
-      case AesMode.ecb:
         ivSize = 16; // 16 bytes for these algorithms
         break;
       case AesMode.gcm:
@@ -40,7 +39,7 @@ class DashCrypt {
         break;
       default:
         throw ArgumentError('Unsupported algorithm: ${mode.name
-        }. Supported: CBC, CFB, OFB, GCM.');
+        }. Supported: CBC, CFB, GCM.');
     }
 
     final randomBytes = SecureRandomUtils.generateSecureBytes(ivSize);

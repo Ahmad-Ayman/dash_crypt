@@ -6,7 +6,7 @@ description: >
   provides utilities for secure key and IV generation, ensuring robust security. Designed 
   for simplicity, performance, and scalability, DashCrypt is the perfect solution for all 
   your encryption needs.
-version: 0.0.1
+version: 0.0.1+2
 homepage: https://ahmed-ayman.framer.ai/
 repository: https://github.com/Ahmad-Ayman/dash_crypt
 
