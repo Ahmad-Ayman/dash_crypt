@@ -7,4 +7,43 @@ provides utilities for secure key and IV generation, ensuring robust security. D
 for simplicity, performance, and scalability, DashCrypt is the perfect solution for all
 your encryption needs.
 
-# 📌 Clear Docs is being prepared
+# 📌 Requirements
+
+To use this plugin, make sure your project meets the following minimum SDK requirements:
+
+
+| SDK     | Version        | 
+|:--------|:---------------| 
+| Dart    | >=3.6.0 <4.0.0 |  
+| Flutter | >=3.27.1       | 
+
+
+
+# 📌 Platform Support
+- This Flutter package supports the following platforms:
+
+
+| Platform             | Support Status    |
+|:---------------------|:------------------|
+| Android              | ✅ Supported       |
+| iOS                  | ✅ Supported       |
+| Web                  | ✅ Supported       |
+
+
+## 🚀 Features
+
+
+## 🚀 Installation
+
+Add `dash_crypt` to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  dash_crypt: ^0.0.1+2
+```
+
+Then, run:
+
+```bash
+flutter pub get
+```
